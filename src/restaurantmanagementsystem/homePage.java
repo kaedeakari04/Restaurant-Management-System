@@ -5,7 +5,7 @@ import java.awt.event.*;
 
 public class homePage extends JFrame implements ActionListener
 {
-    private JLabel lblTitle, lblSubtitle1, lblSubtitle2;
+    private JLabel lblTitle, lblSubtitle1, lblSubtitle2, lblStatus;
     private JButton btnLogin;
     
     homePage()
@@ -37,14 +37,22 @@ public class homePage extends JFrame implements ActionListener
             lblSubtitle2.setFont(new Font("Arial", Font.PLAIN, 20));
             add(lblSubtitle2);  
             
+        lblStatus = new JLabel ("");
+            lblStatus.setBounds(430,550, 300, 30);
+            add(lblStatus);
+            
         btnLogin = new JButton ("LOGIN");
             btnLogin.setBounds(350,500,300,30);
+            btnLogin.addActionListener(this);
             add(btnLogin);
     }
     
     @Override
     public void actionPerformed(ActionEvent e) {
-        
+        if (e.getSource() == btnLogin) 
+        {
+            lblStatus.setText("LOG IN SUCCESSFULLY");
+        }
     }
     
 }
