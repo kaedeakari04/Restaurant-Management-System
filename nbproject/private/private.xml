@@ -4,23 +4,24 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/MainClasses/mainClass.java</file>
-            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/RestaurantManagementSystem_/InventoryManagement/invItem.java</file>
-            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/RestaurantManagementSystem_/InventoryManagement/invList.java</file>
-            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/RestaurantManagementSystem_/InventoryManagement/InventoryPopulatedData.java</file>
-            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/RestaurantManagementSystem_/InventoryManagement/InventoryManager.java</file>
-            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/RestaurantManagementSystem_/InventoryManagement/invDelivery.java</file>
-            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/RestaurantManagementSystem_/ReportsGenerator/RecordSales.java</file>
-            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/RestaurantManagementSystem_/PaymentProcess/PaymentProcessingPage.java</file>
-            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/RestaurantManagementSystem_/PaymentProcess/Order.java</file>
-            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/RestaurantManagementSystem_/ReportsGenerator/ReportsGenerator.java</file>
-            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/RestaurantManagementSystem_/Products/Appetizer.java</file>
-            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/RestaurantManagementSystem_/Products/Dessert.java</file>
             <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/RestaurantManagementSystem_/Products/ProductSummary.java</file>
-            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/SidePanels/SidePanel_Admin.java</file>
-            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/SidePanels/SidePanel_Staff.java</file>
+            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/RestaurantManagementSystem_/FoodWasteTracker/WasteLogPanel.java</file>
+            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/RestaurantManagementSystem_/InventoryManagement/InventoryManager.java</file>
+            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/RestaurantManagementSystem_/InventoryManagement/invList.java</file>
+            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/RestaurantManagementSystem_/InventoryManagement/invRecipe.java</file>
+            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/RestaurantManagementSystem_/PaymentProcess/PaymentConfirmationDialog.java</file>
+            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/RestaurantManagementSystem_/ReportsGenerator/ReportsGenerator.java</file>
+            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/RestaurantManagementSystem_/ReportsGenerator/RecordSales.java</file>
+            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/RestaurantManagementSystem_/InventoryManagement/invDelivery.java</file>
             <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/MainPlacementFrame/adminFrame.java</file>
             <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/MainPlacementFrame/superAdminFrame.java</file>
             <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/MainPlacementFrame/userFrame.java</file>
+            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/SidePanels/SidePanel_Staff.java</file>
+            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/SidePanels/SidePanel_Admin.java</file>
+            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/MainClasses/LoginPage.java</file>
+            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/SidePanels/SidePanel_SuperAdmin.java</file>
+            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/RestaurantManagementSystem_/Products/Products.java</file>
+            <file>file:/C:/Users/iranz/Documents/NetBeansProjects/Restaurant-Management-System/src/RestaurantManagementSystem_/InventoryManagement/InventoryPopulatedData.java</file>
         </group>
     </open-files>
 </project-private>

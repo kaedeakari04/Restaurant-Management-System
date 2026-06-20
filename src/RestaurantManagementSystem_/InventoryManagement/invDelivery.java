@@ -15,19 +15,28 @@ import javax.swing.*;
 
 public class invDelivery extends JPanel implements ActionListener {
 
+    public enum Role { STAFF, ADMIN, SUPER_ADMIN }
+
     private DefaultTableModel model;
     private JTable deliveryTable;
     private JPanel panelFunctionMenu, panelDeliveryTable, panelDate, panelTime, panelAdd, panelModify;
     private JLabel lblDate, lblTime, lblAddItemID, lblAddName, lblAddQuantity, lblAddCategory, lblAddMeasurement,
-                   lblAddDeliveryID, lblAddExpirationDate, lblAddDeliveryDate,lblAddDeliveryDate1, lblAddDeliveryTime,lblAddDeliveryTime1,
+                   lblAddDeliveryID, lblAddExpirationDate, lblAddDeliveryDate, lblAddDeliveryDate1, lblAddDeliveryTime, lblAddDeliveryTime1,
                    lblAddDeliveryCourier;
     private JComboBox cbAddCategory, cbAddMeasurement;
     private JButton btnAdd, btnModify, btnRemove;
     private JTextField txtAddName, txtAddQuantity, txtAddExpirationDate, txtAddDeliveryDate, txtAddDeliveryTime, txtAddDeliveryCourier;
     private List<invItem> deliveryList;
+    private Role role;
 
     public invDelivery()
     {
+        this(Role.STAFF);
+    }
+
+    public invDelivery(Role role)
+    {
+        this.role = role;
         this.deliveryList = InventoryManager.getInstance().getDeliveryList();
         setBounds(300, 80, 980, 720);
         setLayout(null);
@@ -90,7 +99,7 @@ public class invDelivery extends JPanel implements ActionListener {
         panelDeliveryTable.setBackground(Color.decode("#f5cfba"));
 
         model = new DefaultTableModel();
-        model.addColumn("DELIVERY ID");
+        model.addColumn("STOCKS ID");
         model.addColumn("ITEM ID");
         model.addColumn("ITEM NAME");
         model.addColumn("QUANTITY");
@@ -116,6 +125,8 @@ public class invDelivery extends JPanel implements ActionListener {
 
         stylebtnFunction(btnAdd);
         stylebtnFunction(btnModify);
+
+        btnModify.setVisible(role == Role.ADMIN || role == Role.SUPER_ADMIN);
 
         btnAdd.addActionListener(this);
         btnModify.addActionListener(this);
@@ -151,17 +162,17 @@ public class invDelivery extends JPanel implements ActionListener {
 
             DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
             DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("hh:mm:ss a");
-            
-            String autoDeliveryID = InventoryManager.generateDeliveryID();
-            String autoItemID     = InventoryManager.generateItemID();
-            String autoDate = now.format(dateFormat);
-            String autoTime = now.format(timeFormat);
-            
+
+            String autoStocksID = InventoryManager.generateStocksID();
+            String autoItemID   = InventoryManager.generateItemID();
+            String autoDate     = now.format(dateFormat);
+            String autoTime     = now.format(timeFormat);
+
             panelAdd = new JPanel(new GridLayout(10, 2, 5, 5));
 
-            lblAddDeliveryID = new JLabel("Delivery ID :");
-            JLabel lblAutoDeliveryID = new JLabel(autoDeliveryID);
-            lblAutoDeliveryID.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 13));
+            lblAddDeliveryID = new JLabel("Stocks ID :");
+            JLabel lblAutoStocksID = new JLabel(autoStocksID);
+            lblAutoStocksID.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 13));
 
             lblAddItemID = new JLabel("Item ID :");
             JLabel lblAutoItemID = new JLabel(autoItemID);
@@ -174,7 +185,7 @@ public class invDelivery extends JPanel implements ActionListener {
             txtAddQuantity = new JTextField();
 
             lblAddCategory = new JLabel("*Category:");
-            String[] categories = {"MEAT", "SEASONING", "VEGETABLE", "FRUIT","CONDIMENTS", "OTHERS"};
+            String[] categories = {"MEAT", "SEASONING", "VEGETABLE", "FRUIT", "CONDIMENTS", "OTHERS"};
             cbAddCategory = new JComboBox<>(categories);
 
             lblAddMeasurement = new JLabel("*Measurement:");
@@ -184,17 +195,17 @@ public class invDelivery extends JPanel implements ActionListener {
             lblAddExpirationDate = new JLabel("Expiration Date (01/01/2026):");
             txtAddExpirationDate = new JTextField();
 
-            lblAddDeliveryDate = new JLabel("Delivery Date: ");
+            lblAddDeliveryDate  = new JLabel("Delivery Date: ");
             lblAddDeliveryDate1 = new JLabel(autoDate);
 
-            lblAddDeliveryTime = new JLabel("Delivery Time: ");
+            lblAddDeliveryTime  = new JLabel("Delivery Time: ");
             lblAddDeliveryTime1 = new JLabel(autoTime);
 
             lblAddDeliveryCourier = new JLabel("*   Courier:");
             txtAddDeliveryCourier = new JTextField();
 
             panelAdd.add(lblAddDeliveryID);
-            panelAdd.add(lblAutoDeliveryID);
+            panelAdd.add(lblAutoStocksID);
             panelAdd.add(lblAddItemID);
             panelAdd.add(lblAutoItemID);
             panelAdd.add(lblAddName);
@@ -238,42 +249,38 @@ public class invDelivery extends JPanel implements ActionListener {
                             JOptionPane.showMessageDialog(this, "Quantity must be over 0", "Add Delivery | Error", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
-                        else
+
+                        if (!InventoryManager.getInstance().itemExistsInInventory(inputItemName))
                         {
-                            // Validate that item name exists in inventory before adding delivery
-                            boolean itemKnown = InventoryManager.getInstance().itemExistsInInventory(inputItemName);
-                            if (!itemKnown)
-                            {
-                                JOptionPane.showMessageDialog(this,
-                                        "\"" + inputItemName + "\" does not exist in inventory.\n" +
-                                        "Only items already recorded in the inventory can receive deliveries.\n" +
-                                        "Please check the item name and try again.",
-                                        "Add Delivery | Item Not Found",
-                                        JOptionPane.ERROR_MESSAGE);
-                                InventoryManager.rollbackItemID();
-                                return;
-                            }
-
-                            invItem item = new invItem(autoItemID, inputItemName, inputItemQuantityDouble, inputItemCategory, inputItemMeasurement, autoDeliveryID, inputItemExpiration, autoDate, autoTime, inputDeliveryCourier, "");
-
-                            deliveryList.add(item);
-                            InventoryManager.getInstance().receiveDelivery(item);
-
-                            model.addRow(new Object[]{
-                                autoDeliveryID,
-                                autoItemID,
-                                inputItemName,
-                                inputItemQuantityDouble,
-                                inputItemCategory,
-                                inputItemMeasurement,
-                                inputItemExpiration,
-                                autoDate,
-                                autoTime,
-                                inputDeliveryCourier
-                            });
-
-                            JOptionPane.showMessageDialog(this, "Delivery added successfully", "Add Delivery", JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.showMessageDialog(this,
+                                    "\"" + inputItemName + "\" does not exist in inventory.\n" +
+                                    "Only items already recorded in the inventory can receive deliveries.\n" +
+                                    "Please check the item name and try again.",
+                                    "Add Delivery | Item Not Found",
+                                    JOptionPane.ERROR_MESSAGE);
+                            InventoryManager.rollbackItemID();
+                            return;
                         }
+
+                        invItem item = new invItem(autoItemID, inputItemName, inputItemQuantityDouble, inputItemCategory, inputItemMeasurement, autoStocksID, inputItemExpiration, autoDate, autoTime, inputDeliveryCourier, "");
+
+                        deliveryList.add(item);
+                        InventoryManager.getInstance().receiveDelivery(item);
+
+                        model.addRow(new Object[]{
+                            autoStocksID,
+                            autoItemID,
+                            inputItemName,
+                            inputItemQuantityDouble,
+                            inputItemCategory,
+                            inputItemMeasurement,
+                            inputItemExpiration,
+                            autoDate,
+                            autoTime,
+                            inputDeliveryCourier
+                        });
+
+                        JOptionPane.showMessageDialog(this, "Delivery added successfully", "Add Delivery", JOptionPane.INFORMATION_MESSAGE);
                     }
                     catch (NumberFormatException ex)
                     {
@@ -296,107 +303,89 @@ public class invDelivery extends JPanel implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Please select a delivery to modify", "Modify | Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            else
+
+            String selectedStocksID = (String) model.getValueAt(selectedRow, 0);
+            invItem itemToModify = null;
+
+            for (invItem item : deliveryList)
             {
-                String selectedDeliveryID = (String) model.getValueAt(selectedRow, 0);
-                invItem itemToModify = null;
-
-                for (invItem item : deliveryList)
+                if (item.getDeliveryID().equalsIgnoreCase(selectedStocksID))
                 {
-                    if (item.getDeliveryID().equalsIgnoreCase(selectedDeliveryID))
-                    {
-                        itemToModify = item;
-                        break;
-                    }
-                }
-
-                if (itemToModify == null)
-                {
-                    JOptionPane.showMessageDialog(this, "Delivery not found", "Modify | Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                else
-                {
-                    panelModify = new JPanel(new GridLayout(10, 2, 5, 5));
-
-                    JLabel lblModDeliveryID = new JLabel(itemToModify.getDeliveryID());
-                    lblModDeliveryID.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 13));
-                    JLabel lblModItemID = new JLabel(itemToModify.getItemID());
-                    lblModItemID.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 13));
-
-                    txtAddName          = new JTextField(itemToModify.getItemName());
-                    txtAddQuantity      = new JTextField(String.valueOf(itemToModify.getItemQuantity()));
-
-                    String[] categories = {"MEAT", "SEASONING", "VEGETABLE","FRUIT", "CONDIMENTS", "OTHERS"};
-                    cbAddCategory = new JComboBox<>(categories);
-                    cbAddCategory.setSelectedItem(itemToModify.getItemCategory());
-
-                    String[] measurements = {"KG", "LITER", "PACK", "PCS"};
-                    cbAddMeasurement = new JComboBox<>(measurements);
-                    cbAddMeasurement.setSelectedItem(itemToModify.getItemMeasurement());
-
-                    txtAddExpirationDate  = new JTextField(itemToModify.getItemExpirationDate());
-                    txtAddDeliveryCourier = new JTextField(itemToModify.getItemDeliveryCourier());
-
-                    panelModify.add(new JLabel("Delivery ID:"));
-                    panelModify.add(lblModDeliveryID);
-                    panelModify.add(new JLabel("Item ID:"));
-                    panelModify.add(lblModItemID);
-                    panelModify.add(new JLabel("Item Name:"));
-                    panelModify.add(txtAddName);
-                    panelModify.add(new JLabel("Category:"));
-                    panelModify.add(cbAddCategory);
-                    panelModify.add(new JLabel("Measurement:"));
-                    panelModify.add(cbAddMeasurement);
-                    panelModify.add(new JLabel("Expiration Date:"));
-                    panelModify.add(txtAddExpirationDate);
-                    panelModify.add(new JLabel("Courier:"));
-                    panelModify.add(txtAddDeliveryCourier);
-
-                    int result = JOptionPane.showConfirmDialog(this, panelModify, "Modify Delivery", JOptionPane.OK_CANCEL_OPTION);
-
-                    if (result != JOptionPane.OK_OPTION)
-                    {
-                        return;
-                    }
-                    else
-                    {
-                        String newItemName        = txtAddName.getText().trim();
-                        String newItemCategory    = cbAddCategory.getSelectedItem().toString();
-                        String newItemMeasurement = cbAddMeasurement.getSelectedItem().toString();
-                        String newItemExpiration  = txtAddExpirationDate.getText().trim();
-                        String newDeliveryCourier = txtAddDeliveryCourier.getText().trim();
-
-                        // IDs are immutable — keep the originals
-                        String keptDeliveryID = itemToModify.getDeliveryID();
-                        String keptItemID     = itemToModify.getItemID();
-
-                        try
-                        {
-                            itemToModify.setItemName(newItemName);
-                            itemToModify.setItemCategory(newItemCategory);
-                            itemToModify.setItemMeasurement(newItemMeasurement);
-                            itemToModify.setExpirationDate(newItemExpiration);
-                            itemToModify.setDeliveryCourier(newDeliveryCourier);
-
-                            model.setValueAt(keptDeliveryID,         selectedRow, 0);
-                            model.setValueAt(keptItemID,             selectedRow, 1);
-                            model.setValueAt(newItemName,            selectedRow, 2);
-                            model.setValueAt(newItemCategory,        selectedRow, 4);
-                            model.setValueAt(newItemMeasurement,     selectedRow, 5);
-                            model.setValueAt(newItemExpiration,      selectedRow, 6);
-                            model.setValueAt(newDeliveryCourier,     selectedRow, 9);
-
-                            JOptionPane.showMessageDialog(this, "Delivery modified successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
-                        }
-                        catch (NumberFormatException ex)
-                        {
-                            JOptionPane.showMessageDialog(this, "Quantity must be a valid number", "Modify Error", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
+                    itemToModify = item;
+                    break;
                 }
             }
-        }
 
+            if (itemToModify == null)
+            {
+                JOptionPane.showMessageDialog(this, "Delivery not found", "Modify | Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            panelModify = new JPanel(new GridLayout(10, 2, 5, 5));
+
+            JLabel lblModStocksID = new JLabel(itemToModify.getDeliveryID());
+            lblModStocksID.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 13));
+            JLabel lblModItemID = new JLabel(itemToModify.getItemID());
+            lblModItemID.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 13));
+
+            txtAddName            = new JTextField(itemToModify.getItemName());
+            txtAddQuantity        = new JTextField(String.valueOf(itemToModify.getItemQuantity()));
+
+            String[] categories = {"MEAT", "SEASONING", "VEGETABLE", "FRUIT", "CONDIMENTS", "OTHERS"};
+            cbAddCategory = new JComboBox<>(categories);
+            cbAddCategory.setSelectedItem(itemToModify.getItemCategory());
+
+            String[] measurements = {"KG", "LITER", "PACK", "PCS"};
+            cbAddMeasurement = new JComboBox<>(measurements);
+            cbAddMeasurement.setSelectedItem(itemToModify.getItemMeasurement());
+
+            txtAddExpirationDate  = new JTextField(itemToModify.getItemExpirationDate());
+            txtAddDeliveryCourier = new JTextField(itemToModify.getItemDeliveryCourier());
+
+            panelModify.add(new JLabel("Stocks ID:"));
+            panelModify.add(lblModStocksID);
+            panelModify.add(new JLabel("Item ID:"));
+            panelModify.add(lblModItemID);
+            panelModify.add(new JLabel("Item Name:"));
+            panelModify.add(txtAddName);
+            panelModify.add(new JLabel("Category:"));
+            panelModify.add(cbAddCategory);
+            panelModify.add(new JLabel("Measurement:"));
+            panelModify.add(cbAddMeasurement);
+            panelModify.add(new JLabel("Expiration Date:"));
+            panelModify.add(txtAddExpirationDate);
+            panelModify.add(new JLabel("Courier:"));
+            panelModify.add(txtAddDeliveryCourier);
+
+            int result = JOptionPane.showConfirmDialog(this, panelModify, "Modify Delivery", JOptionPane.OK_CANCEL_OPTION);
+
+            if (result != JOptionPane.OK_OPTION) return;
+
+            String newItemName        = txtAddName.getText().trim();
+            String newItemCategory    = cbAddCategory.getSelectedItem().toString();
+            String newItemMeasurement = cbAddMeasurement.getSelectedItem().toString();
+            String newItemExpiration  = txtAddExpirationDate.getText().trim();
+            String newDeliveryCourier = txtAddDeliveryCourier.getText().trim();
+
+            String keptStocksID = itemToModify.getDeliveryID();
+            String keptItemID   = itemToModify.getItemID();
+
+            itemToModify.setItemName(newItemName);
+            itemToModify.setItemCategory(newItemCategory);
+            itemToModify.setItemMeasurement(newItemMeasurement);
+            itemToModify.setExpirationDate(newItemExpiration);
+            itemToModify.setDeliveryCourier(newDeliveryCourier);
+
+            model.setValueAt(keptStocksID,       selectedRow, 0);
+            model.setValueAt(keptItemID,          selectedRow, 1);
+            model.setValueAt(newItemName,         selectedRow, 2);
+            model.setValueAt(newItemCategory,     selectedRow, 4);
+            model.setValueAt(newItemMeasurement,  selectedRow, 5);
+            model.setValueAt(newItemExpiration,   selectedRow, 6);
+            model.setValueAt(newDeliveryCourier,  selectedRow, 9);
+
+            JOptionPane.showMessageDialog(this, "Delivery modified successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 }

@@ -15,8 +15,8 @@ public class WasteLogPanel extends JPanel implements ActionListener {
     public static List<WasteLog> getSharedLogs() { return SHARED_LOGS; }
 
     public enum Role { STAFF, ADMIN, SUPER_ADMIN }
-    public static WasteLogPanel forStaff() { return new WasteLogPanel(SHARED_LOGS, Role.STAFF); }
-    public static WasteLogPanel forAdmin() { return new WasteLogPanel(SHARED_LOGS, Role.ADMIN); }
+    public static WasteLogPanel forStaff()      { return new WasteLogPanel(SHARED_LOGS, Role.STAFF); }
+    public static WasteLogPanel forAdmin()      { return new WasteLogPanel(SHARED_LOGS, Role.ADMIN); }
     public static WasteLogPanel forSuperAdmin() { return new WasteLogPanel(SHARED_LOGS, Role.SUPER_ADMIN); }
 
     private List<WasteLog> logs;
@@ -30,16 +30,16 @@ public class WasteLogPanel extends JPanel implements ActionListener {
     private JButton btnAddLog, btnEditLogs, btnConfirmEdit;
     private JPanel btnPanel;
 
-    Color colorCream = new Color(0xFF, 0xF8, 0xE1);
-    Color colorTeal = new Color(0x36, 0x63, 0x79);
-    Color colorRed = new Color(0xB7, 0x1C, 0x1C);
+    Color colorCream  = new Color(0xFF, 0xF8, 0xE1);
+    Color colorTeal   = new Color(0x36, 0x63, 0x79);
+    Color colorRed    = new Color(0xB7, 0x1C, 0x1C);
     Color colorSalmon = new Color(0xF5, 0xCF, 0xBA);
-    Color colorSteel = new Color(0x89, 0xB7, 0xB3);
-    Color colorDark = new Color(0x22, 0x3A, 0x45);
-    Color colorWhite = Color.WHITE;
+    Color colorSteel  = new Color(0x89, 0xB7, 0xB3);
+    Color colorDark   = new Color(0x22, 0x3A, 0x45);
+    Color colorWhite  = Color.WHITE;
     Color colorRowAlt = new Color(0xFF, 0xF0, 0xD0);
 
-    Font fontBold = new Font("Arial", Font.BOLD, 14);
+    Font fontBold   = new Font("Arial", Font.BOLD, 14);
     Font fontNormal = new Font("Arial", Font.PLAIN, 13);
     Font fontHeader = new Font("Arial", Font.BOLD, 22);
 
@@ -83,6 +83,12 @@ public class WasteLogPanel extends JPanel implements ActionListener {
         tblWasteLog.getTableHeader().setForeground(colorWhite);
         tblWasteLog.getTableHeader().setFont(fontBold);
         tblWasteLog.getTableHeader().setReorderingAllowed(false);
+        tblWasteLog.getColumnModel().getColumn(0).setPreferredWidth(120);
+        tblWasteLog.getColumnModel().getColumn(1).setPreferredWidth(130);
+        tblWasteLog.getColumnModel().getColumn(2).setPreferredWidth(60);
+        tblWasteLog.getColumnModel().getColumn(3).setPreferredWidth(110);
+        tblWasteLog.getColumnModel().getColumn(4).setPreferredWidth(70);
+        tblWasteLog.getColumnModel().getColumn(5).setPreferredWidth(250);
         scrollPane = new JScrollPane(tblWasteLog);
         scrollPane.setBounds(30, 75, 920, 520);
         scrollPane.getViewport().setBackground(colorCream);
@@ -203,12 +209,11 @@ public class WasteLogPanel extends JPanel implements ActionListener {
     {
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
 
-        // --- Step 1: Ask whether waste is from a DISH or a raw INGREDIENT ---
         String[] logTypes = {"Ingredient", "Dish"};
         int typeChoice = JOptionPane.showOptionDialog(
                 frame,
                 "What type of waste are you logging?",
-                "ADD WASTE LOG — Select Type",
+                "ADD WASTE LOG",
                 JOptionPane.DEFAULT_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
                 null,
@@ -217,47 +222,37 @@ public class WasteLogPanel extends JPanel implements ActionListener {
         );
         if (typeChoice == JOptionPane.CLOSED_OPTION) return;
 
-        boolean isDish = (typeChoice == 1);
-
         String timeNow    = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date());
         String currentEmp = WasteLogSession.getInstance().getEmployeeNo();
 
         RestaurantManagementSystem_.InventoryManagement.InventoryPopulatedData.loadInventoryData();
 
-        if (isDish)
+        if (typeChoice == 1)
         {
-            // --- DISH path: pick dish name + quantity of servings ---
             JPanel panelDish = new JPanel(new GridLayout(5, 2, 5, 10));
 
-            JLabel lblTime = new JLabel("TIME:");
             JTextField txtTime = new JTextField(timeNow);
             txtTime.setEditable(false);
 
-            JLabel lblDish = new JLabel("* DISH:");
             String[] dishNames = {"- Select Dish -", "Chicken Adobo", "Chicharon Bulaklak",
                     "Tortang Talong", "Turon", "Iced Tea", "Buko Juice"};
             JComboBox<String> cbDish = new JComboBox<>(dishNames);
 
-            JLabel lblQty = new JLabel("* SERVINGS:");
             JTextField txtQty = new JTextField();
 
-            JLabel lblStaff = new JLabel("STAFF:");
             JTextField txtStaff = new JTextField(currentEmp);
             txtStaff.setEditable(false);
             txtStaff.setBackground(new Color(0xEE, 0xEE, 0xEE));
 
-            JLabel lblRemarks = new JLabel("REMARKS:");
             JTextField txtRemarks = new JTextField();
 
-            panelDish.add(lblTime);   panelDish.add(txtTime);
-            panelDish.add(lblDish);   panelDish.add(cbDish);
-            panelDish.add(lblQty);    panelDish.add(txtQty);
-            panelDish.add(lblStaff);  panelDish.add(txtStaff);
-            panelDish.add(lblRemarks);panelDish.add(txtRemarks);
+            panelDish.add(new JLabel("TIME:"));       panelDish.add(txtTime);
+            panelDish.add(new JLabel("* DISH:"));     panelDish.add(cbDish);
+            panelDish.add(new JLabel("* SERVINGS:")); panelDish.add(txtQty);
+            panelDish.add(new JLabel("STAFF:"));      panelDish.add(txtStaff);
+            panelDish.add(new JLabel("REMARKS:"));    panelDish.add(txtRemarks);
 
-            int confirm = JOptionPane.showConfirmDialog(
-                    frame, panelDish, "ADD WASTE LOG — Dish", JOptionPane.OK_CANCEL_OPTION
-            );
+            int confirm = JOptionPane.showConfirmDialog(frame, panelDish, "ADD WASTE LOG — Dish", JOptionPane.OK_CANCEL_OPTION);
             if (confirm != JOptionPane.OK_OPTION) return;
 
             String selectedDish = (String) cbDish.getSelectedItem();
@@ -290,8 +285,7 @@ public class WasteLogPanel extends JPanel implements ActionListener {
                 return;
             }
 
-            // Check if all required ingredients have enough stock before deducting
-            java.util.List<String> missing = checkDishStock(selectedDish, servings);
+            List<String> missing = checkDishStock(selectedDish, servings);
             if (!missing.isEmpty())
             {
                 JOptionPane.showMessageDialog(frame,
@@ -300,62 +294,51 @@ public class WasteLogPanel extends JPanel implements ActionListener {
                 return;
             }
 
-            // Deduct ingredients via recipe and log each one
-            deductDishIngredients(selectedDish, servings, timeNow, currentEmp, txtRemarks.getText().trim());
+            String extraRemarks = txtRemarks.getText().trim();
 
-            // Add a single summary log entry for the dish itself
-            logs.add(new WasteLog(
-                    timeNow,
-                    selectedDish + " (x" + servings + ")",
-                    inputQty + " serving(s)",
-                    "Dish Waste",
-                    currentEmp,
-                    txtRemarks.getText().trim()
-            ));
+            Map<String, Double> req = getDishRequirements(selectedDish, servings);
+            for (Map.Entry<String, Double> entry : req.entrySet())
+            {
+                InventoryManager.getInstance().deductStock(entry.getKey(), entry.getValue());
+                String dishRemarks = "X" + servings + " " + selectedDish + (extraRemarks.isEmpty() ? "" : " | " + extraRemarks);
+                logs.add(new WasteLog(timeNow, entry.getKey(), String.valueOf(entry.getValue()), "Dish Waste", currentEmp, dishRemarks));
+            }
+
             refreshTable();
         }
         else
         {
-            // --- INGREDIENT path: pick inventory item + quantity ---
             JPanel panelAdd = new JPanel(new GridLayout(6, 2, 5, 10));
 
-            JLabel lblTime = new JLabel("TIME:");
             JTextField txtTime = new JTextField(timeNow);
             txtTime.setEditable(false);
 
-            JLabel lblItem = new JLabel("* FOOD ITEM:");
             List<invItem> invList = InventoryManager.getInstance().getInventoryList();
             String[] itemNames = new String[invList.size() + 1];
             itemNames[0] = "-Select Item-";
             for (int i = 0; i < invList.size(); i++) itemNames[i + 1] = invList.get(i).getItemName();
             JComboBox<String> cbItem = new JComboBox<>(itemNames);
 
-            JLabel lblQty = new JLabel("* QUANTITY:");
             JTextField txtQty = new JTextField();
 
-            JLabel lblReason = new JLabel("* REASON:");
             String[] reasons = {"-Select Reason-", "Spoilage/Expired", "Leftovers",
                     "Customer Returns", "Contaminated", "Staff Error", "Other"};
             JComboBox<String> cbReason = new JComboBox<>(reasons);
 
-            JLabel lblStaff = new JLabel("STAFF:");
             JTextField txtStaff = new JTextField(currentEmp);
             txtStaff.setEditable(false);
             txtStaff.setBackground(new Color(0xEE, 0xEE, 0xEE));
 
-            JLabel lblRemarks = new JLabel("REMARKS:");
             JTextField txtRemarks = new JTextField();
 
-            panelAdd.add(lblTime);    panelAdd.add(txtTime);
-            panelAdd.add(lblItem);    panelAdd.add(cbItem);
-            panelAdd.add(lblQty);     panelAdd.add(txtQty);
-            panelAdd.add(lblReason);  panelAdd.add(cbReason);
-            panelAdd.add(lblStaff);   panelAdd.add(txtStaff);
-            panelAdd.add(lblRemarks); panelAdd.add(txtRemarks);
+            panelAdd.add(new JLabel("TIME:"));        panelAdd.add(txtTime);
+            panelAdd.add(new JLabel("* FOOD ITEM:")); panelAdd.add(cbItem);
+            panelAdd.add(new JLabel("* QUANTITY:"));  panelAdd.add(txtQty);
+            panelAdd.add(new JLabel("* REASON:"));    panelAdd.add(cbReason);
+            panelAdd.add(new JLabel("STAFF:"));       panelAdd.add(txtStaff);
+            panelAdd.add(new JLabel("REMARKS:"));     panelAdd.add(txtRemarks);
 
-            int userConfirm = JOptionPane.showConfirmDialog(
-                    frame, panelAdd, "ADD WASTE LOG — Ingredient", JOptionPane.OK_CANCEL_OPTION
-            );
+            int userConfirm = JOptionPane.showConfirmDialog(frame, panelAdd, "ADD WASTE LOG — Ingredient", JOptionPane.OK_CANCEL_OPTION);
             if (userConfirm != JOptionPane.OK_OPTION) return;
 
             String inputItem   = (String) cbItem.getSelectedItem();
@@ -394,9 +377,7 @@ public class WasteLogPanel extends JPanel implements ActionListener {
                 return;
             }
 
-            // Validate against available stock BEFORE deducting
-            boolean hasStock = InventoryManager.getInstance().hasStock(inputItem, parsedInputQty);
-            if (!hasStock)
+            if (!InventoryManager.getInstance().hasStock(inputItem, parsedInputQty))
             {
                 JOptionPane.showMessageDialog(frame,
                         "Insufficient stock. The quantity entered exceeds what is available in inventory.",
@@ -404,31 +385,16 @@ public class WasteLogPanel extends JPanel implements ActionListener {
                 return;
             }
 
-            boolean deducted = InventoryManager.getInstance().deductStock(inputItem, parsedInputQty);
-            if (!deducted)
-            {
-                JOptionPane.showMessageDialog(frame, "Failed to deduct stock. Please try again.", "STOCK ERROR", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            logs.add(new WasteLog(
-                    txtTime.getText().trim(),
-                    inputItem,
-                    inputQty,
-                    inputReason,
-                    currentEmp,
-                    txtRemarks.getText().trim()
-            ));
+            InventoryManager.getInstance().deductStock(inputItem, parsedInputQty);
+            logs.add(new WasteLog(timeNow, inputItem, inputQty, inputReason, currentEmp, txtRemarks.getText().trim()));
             refreshTable();
         }
     }
 
-    // Returns names of ingredients that have insufficient stock for the given dish/servings
-    private java.util.List<String> checkDishStock(String dishName, int servings)
+    private List<String> checkDishStock(String dishName, int servings)
     {
-        java.util.List<String> missing = new java.util.ArrayList<>();
-        java.util.Map<String, Double> requirements = getDishRequirements(dishName, servings);
-        for (java.util.Map.Entry<String, Double> entry : requirements.entrySet())
+        List<String> missing = new ArrayList<>();
+        for (Map.Entry<String, Double> entry : getDishRequirements(dishName, servings).entrySet())
         {
             if (!InventoryManager.getInstance().hasStock(entry.getKey(), entry.getValue()))
                 missing.add(entry.getKey());
@@ -436,10 +402,9 @@ public class WasteLogPanel extends JPanel implements ActionListener {
         return missing;
     }
 
-    // Returns a map of ingredient name → required quantity for the dish
-    private java.util.Map<String, Double> getDishRequirements(String dishName, int qty)
+    private Map<String, Double> getDishRequirements(String dishName, int qty)
     {
-        java.util.Map<String, Double> req = new java.util.LinkedHashMap<>();
+        Map<String, Double> req = new LinkedHashMap<>();
         switch (dishName)
         {
             case "Chicken Adobo":
@@ -481,28 +446,10 @@ public class WasteLogPanel extends JPanel implements ActionListener {
         return req;
     }
 
-    // Deducts all ingredients for the dish and logs each one individually
-    private void deductDishIngredients(String dishName, int servings, String timeNow, String emp, String remarks)
-    {
-        java.util.Map<String, Double> req = getDishRequirements(dishName, servings);
-        for (java.util.Map.Entry<String, Double> entry : req.entrySet())
-        {
-            InventoryManager.getInstance().deductStock(entry.getKey(), entry.getValue());
-            logs.add(new WasteLog(
-                    timeNow,
-                    entry.getKey(),
-                    String.valueOf(entry.getValue()),
-                    "Dish Waste (" + dishName + ")",
-                    emp,
-                    remarks
-            ));
-        }
-    }
-
     @Override
     public void actionPerformed(ActionEvent e)
     {
-        if (e.getSource() == btnAddLog) { showAddLogDialog(); }
+        if (e.getSource() == btnAddLog)        { showAddLogDialog(); }
         else if (e.getSource() == btnEditLogs) { enterEditMode(); }
         else if (e.getSource() == btnConfirmEdit) { exitEditMode(); }
     }

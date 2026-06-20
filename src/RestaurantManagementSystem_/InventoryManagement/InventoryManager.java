@@ -22,8 +22,8 @@ public class InventoryManager {
         if (itemCounter > 1001) itemCounter--;
     }
 
-    public static String generateDeliveryID() {
-        return String.format("DV%04d", deliveryCounter++);
+    public static String generateStocksID() {
+        return String.format("ST%04d", deliveryCounter++);
     }
 
     public static InventoryManager getInstance() {
@@ -50,17 +50,15 @@ public class InventoryManager {
         delivered.setItemCurrentStatus(computeStatus(delivered.getItemQuantity(), delivered.getItemCategory()));
     }
 
-    /** Returns true if the item exists in inventory AND has at least {@code amount} units. */
     public boolean hasStock(String itemName, double amount) {
         for (invItem item : inventoryList) {
             if (item.getItemName().equalsIgnoreCase(itemName)) {
                 return item.getItemQuantity() >= amount;
             }
         }
-        return false; // item not found in inventory
+        return false;
     }
 
-    /** Returns true if an item with this name exists in inventory (any quantity). */
     public boolean itemExistsInInventory(String itemName) {
         for (invItem item : inventoryList) {
             if (item.getItemName().equalsIgnoreCase(itemName)) return true;
